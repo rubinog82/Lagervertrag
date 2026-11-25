@@ -79,10 +79,9 @@ dialog::backdrop{background:#15223760}
 .entry .description,.entry .actions{grid-column:1/-1}
 [hidden]{display:none!important}
 @media(max-width:1180px){.shell{grid-template-columns:155px minmax(0,1fr)}.projects{grid-template-columns:1fr 1fr}.customer{grid-column:1/-1}.customer p{margin:6px 0}.schedule{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))}}
-@media(max-width:720px){.shell{display:block}aside{display:none}main{padding:13px}.projects{grid-template-columns:1fr}.project-list{height:auto}.toolbar .btn{display:none}.contract-head{flex-wrap:wrap}.customer{grid-column:auto}}
+@media(max-width:720px){.shell{display:block}main{padding:13px}.projects{grid-template-columns:1fr}.project-list{height:auto}.toolbar .btn{display:none}.contract-head{flex-wrap:wrap}.customer{grid-column:auto}}
 
-.shell-nav{display:block;margin:12px -14px 0;padding:12px 14px;border-left:3px solid transparent;color:inherit;text-decoration:none}
-.shell-nav+.shell-nav{margin-top:0}
+.shell-nav{display:block;margin:0 -14px;padding:12px 14px 12px 11px;border-left:3px solid transparent;color:inherit;text-decoration:none}
 .shell-nav[aria-current="page"]{background:#ecf0f4;border-left-color:var(--dark);color:#14243a;font-weight:bold}
 .shell-nav:hover{background:#f5f6f7}
 .contract-head .print-btn{color:#fff;background:#343e50;border:1px solid #718094;padding:5px 9px;white-space:nowrap}
@@ -120,7 +119,7 @@ dialog::backdrop{background:#15223760}
 @media(max-width:720px){
   aside{display:flex;align-items:center;flex-wrap:wrap;gap:5px;border-right:0;border-bottom:1px solid var(--line)}
   aside .side-link,aside .side-title,aside .side-list{display:none}
-  .shell-nav,.shell-nav+.shell-nav{margin:0;padding:7px 9px}
+  .shell-nav{margin:0;padding:7px 9px}
 }
 @media(max-width:400px){
   .billing-grid{grid-template-columns:minmax(90px,.9fr) minmax(95px,1fr) minmax(73px,.6fr);gap:4px;font-size:11px}
@@ -145,8 +144,8 @@ dialog::backdrop{background:#15223760}
   <span class="brand">Haberling</span>
   <span class="side-link">⌂ &nbsp; Dashboard</span>
   <span class="side-link">▤ &nbsp; Belege ›</span>
-  <a class="shell-nav" id="nav-projects" href="#lagervertrag-2026-80030" aria-current="page">Projekte</a>
-  <a class="shell-nav" id="nav-billing" href="#lagerabrechnung">Lagerabrechnung</a>
+  <a class="shell-nav" id="nav-billing" href="#lagerabrechnung"><span aria-hidden="true">▥ &nbsp; </span>Lagerabrechnung</a>
+  <a class="shell-nav" id="nav-projects" href="#lagervertrag-2026-80030" aria-current="page"><span aria-hidden="true">▦ &nbsp; </span>Projekte</a>
   <span class="side-link">♧ &nbsp; Kapazitätsverwaltung ›</span>
   <div class="side-title">▤ &nbsp; Stammdaten ⌄</div>
   <ul class="side-list"><li>Artikelstamm</li><li>Kundenverwaltung</li><li>Standardpreislisten</li><li>Anreden</li><li>Außendienst</li><li>Zuschläge</li><li>E-Mail-Textbausteine</li><li>Beleg-Textbausteine</li></ul>
