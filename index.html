@@ -60,7 +60,7 @@ input,select{min-width:0;width:100%;height:31px;padding:4px 7px;border:1px solid
 .add summary{list-style:none;color:var(--dark);background:#fff;border:1px solid #cbd2db;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:13px}
 .add summary::-webkit-details-marker{display:none}
 .add-menu{position:absolute;right:0;top:calc(100% + 4px);width:max-content;z-index:2;background:#fff;border:1px solid #cbd2db;border-radius:5px;padding:3px;box-shadow:0 4px 10px #17263c23}
-.add-menu button{border:0;background:#fff;padding:8px;text-align:left}
+.add-menu button{display:block;width:100%;border:0;background:#fff;padding:8px;text-align:left}
 .add-menu button:hover{background:#edf0f3}
 .table-scroll{overflow-x:auto}
 .positions{min-width:610px;background:#f7f8f9}
@@ -80,6 +80,63 @@ dialog::backdrop{background:#15223760}
 [hidden]{display:none!important}
 @media(max-width:1180px){.shell{grid-template-columns:155px minmax(0,1fr)}.projects{grid-template-columns:1fr 1fr}.customer{grid-column:1/-1}.customer p{margin:6px 0}.schedule{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))}}
 @media(max-width:720px){.shell{display:block}aside{display:none}main{padding:13px}.projects{grid-template-columns:1fr}.project-list{height:auto}.toolbar .btn{display:none}.contract-head{flex-wrap:wrap}.customer{grid-column:auto}}
+
+.shell-nav{display:block;margin:12px -14px 0;padding:12px 14px;border-left:3px solid transparent;color:inherit;text-decoration:none}
+.shell-nav+.shell-nav{margin-top:0}
+.shell-nav[aria-current="page"]{background:#ecf0f4;border-left-color:var(--dark);color:#14243a;font-weight:bold}
+.shell-nav:hover{background:#f5f6f7}
+.contract-head .print-btn{color:#fff;background:#343e50;border:1px solid #718094;padding:5px 9px;white-space:nowrap}
+.contract-head #contract-description{margin-left:auto}
+.btn-link{display:inline-block;text-decoration:none}
+.btn:disabled{cursor:default;opacity:.55}
+.btn:hover:not(:disabled){filter:brightness(1.13)}
+#billing-view h1{margin-bottom:7px}
+.billing-intro{color:var(--muted);margin-bottom:14px}
+.billing-list{display:grid;gap:6px}
+.billing-grid{display:grid;grid-template-columns:105px minmax(155px,1.3fr) minmax(150px,1fr) minmax(95px,.6fr) minmax(100px,.55fr);gap:12px;align-items:center}
+.billing-columns{padding:7px 13px;margin-left:17px;color:var(--muted);font-size:11px;font-weight:bold}
+.billing-item{background:#fff;border:1px solid var(--line);border-radius:5px}
+.billing-item summary{list-style:none;display:grid;grid-template-columns:17px minmax(0,1fr);align-items:center;padding:9px 12px;cursor:pointer}
+.billing-item summary::-webkit-details-marker{display:none}
+.billing-item summary::before{content:"›";font-size:16px}
+.billing-item[open] summary{background:var(--head);color:#fff;border-radius:4px 4px 0 0}
+.billing-item[open] summary::before{content:"⌄"}
+.billing-amount{text-align:right}
+.billing-body{padding:10px 12px}
+.billing-dates{display:flex;flex-wrap:wrap;gap:5px 18px;margin:0 0 10px;color:var(--muted);font-size:11px}
+.billing-dates strong{color:#14243a}
+.billing-actions{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.billing-period{margin-right:auto;color:var(--muted)}
+.billing-files{display:grid;gap:5px;margin:8px 0 0;padding:0;list-style:none}
+.billing-files a{color:#254d76}
+.edit-price{white-space:nowrap}
+.edit-price button{padding:4px 6px;font-size:11px}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#print-sheet{display:none}
+@media(max-width:950px){
+  .billing-grid{grid-template-columns:minmax(100px,.85fr) minmax(130px,1fr) minmax(100px,.75fr)}
+  .billing-project,.billing-cycle{display:none}
+}
+@media(max-width:720px){
+  aside{display:flex;align-items:center;flex-wrap:wrap;gap:5px;border-right:0;border-bottom:1px solid var(--line)}
+  aside .side-link,aside .side-title,aside .side-list{display:none}
+  .shell-nav,.shell-nav+.shell-nav{margin:0;padding:7px 9px}
+}
+@media(max-width:400px){
+  .billing-grid{grid-template-columns:minmax(90px,.9fr) minmax(95px,1fr) minmax(73px,.6fr);gap:4px;font-size:11px}
+  .billing-item summary{padding:8px 6px}
+}
+@page{size:A4;margin:15mm}
+@media print{
+  :root{background:#fff;color:#000}
+  .shell,dialog{display:none!important}
+  #print-sheet{display:block;font-size:11pt}
+  #print-sheet h1{font-size:20pt;margin:15pt 0 10pt}
+  #print-sheet p{margin:7pt 0}
+  #print-sheet table{margin-top:15pt;min-width:0}
+  #print-sheet tr{break-inside:avoid}
+  #print-sheet th,#print-sheet td{padding:5pt;font-size:9pt}
+}
 </style>
 </head>
 <body>
@@ -88,6 +145,8 @@ dialog::backdrop{background:#15223760}
   <span class="brand">Haberling</span>
   <span class="side-link">⌂ &nbsp; Dashboard</span>
   <span class="side-link">▤ &nbsp; Belege ›</span>
+  <a class="shell-nav" id="nav-projects" href="#lagervertrag-2026-80030" aria-current="page">Projekte</a>
+  <a class="shell-nav" id="nav-billing" href="#lagerabrechnung">Lagerabrechnung</a>
   <span class="side-link">♧ &nbsp; Kapazitätsverwaltung ›</span>
   <div class="side-title">▤ &nbsp; Stammdaten ⌄</div>
   <ul class="side-list"><li>Artikelstamm</li><li>Kundenverwaltung</li><li>Standardpreislisten</li><li>Anreden</li><li>Außendienst</li><li>Zuschläge</li><li>E-Mail-Textbausteine</li><li>Beleg-Textbausteine</li></ul>
@@ -97,6 +156,7 @@ dialog::backdrop{background:#15223760}
 <div>
 <header><strong>◫ &nbsp; HILDE</strong><span>Klickdummy &nbsp; · &nbsp; GJ 2026</span></header>
 <main>
+<section id="projects-view">
 <h1>Projekte</h1>
 <div class="toolbar" aria-hidden="true">
   <span class="search">Suchen (Matchcode, Name, Kundennummer, Projektnummer, Auftragstext, Belegnummer)…</span>
@@ -107,7 +167,7 @@ dialog::backdrop{background:#15223760}
   <div class="project-list"><table>
     <thead><tr><th>Projekt</th><th>Kunde</th><th>Zuletzt</th><th>Status</th></tr></thead>
     <tbody>
-      <tr class="selected"><td>P26-043 Lagerung von 40 m³ Umzugsgut</td><td>Mara Beispiel, Bergfelde</td><td>25.11. 14:42</td><td>Angenommen</td></tr>
+      <tr class="selected"><td class="selected-project">P26-043 Lagerung von 40 m³ Umzugsgut</td><td class="selected-customer">Mara Beispiel, Bergfelde</td><td>25.11. 14:42</td><td>Angenommen</td></tr>
       <tr><td>P26-042 Haushaltsumzug</td><td>Mara Beispiel, Bergfelde</td><td>24.11. 13:44</td><td>Angenommen</td></tr>
       <tr><td>P26-040 Destination Service 20 m³</td><td>Max Muster</td><td>18.11. 11:03</td><td>Berechnen</td></tr>
       <tr><td>P26-041 Abholen einer Palette</td><td>Beispiellogistik, Berlin</td><td>18.11. 10:42</td><td>Neu</td></tr>
@@ -118,12 +178,12 @@ dialog::backdrop{background:#15223760}
   <div class="project-list"><table>
     <thead><tr><th>Projekt</th><th>Kunde</th><th>Umsetzung</th><th>Status</th></tr></thead>
     <tbody>
-      <tr class="selected"><td>P26-043 Lagerung von 40 m³ Umzugsgut</td><td>Mara Beispiel, Bergfelde</td><td></td><td>Angenommen</td></tr>
+      <tr class="selected"><td class="selected-project">P26-043 Lagerung von 40 m³ Umzugsgut</td><td class="selected-customer">Mara Beispiel, Bergfelde</td><td></td><td>Angenommen</td></tr>
       <tr><td>P26-042 Haushaltsumzug</td><td>Mara Beispiel, Bergfelde</td><td>04.01.2027–30.01.2027</td><td>Angenommen</td></tr>
       <tr><td>P26-039 Haushaltsumzug mit Zwischenlagerung</td><td>Mara Beispiel, Bergfelde</td><td></td><td>Aktiv</td></tr>
     </tbody>
   </table></div></section>
-  <section class="customer"><strong>Mara Beispiel 2000008</strong><p>Musterstraße 22<br>16562 Bergfelde DE</p><div>Ansprechpartner</div><div class="contact">Beispiel</div></section>
+  <section class="customer"><strong id="customer-name">Mara Beispiel</strong><p id="customer-address">Musterstraße 22<br>16562 Bergfelde DE</p><div>Ansprechpartner</div><div class="contact" id="customer-contact">Beispiel</div></section>
 </div>
 <section aria-labelledby="details-heading">
 <h2 id="details-heading">Details</h2>
@@ -133,24 +193,25 @@ dialog::backdrop{background:#15223760}
   <button type="button" role="tab" id="tab-contract" aria-controls="contract" aria-selected="true">Lagervertrag</button>
 </div>
 <section class="card simple-panel" id="details" role="tabpanel" aria-labelledby="tab-details" hidden>
-  <strong>P26-043 · Lagerung von 40 m³ Umzugsgut</strong><p>Mara Beispiel · Angenommen</p>
+  <strong id="project-title">P26-043 · Lagerung von 40 m³ Umzugsgut</strong><p id="project-customer">Mara Beispiel · Angenommen</p>
 </section>
 <section class="card simple-panel" id="feedback" role="tabpanel" aria-labelledby="tab-feedback" hidden>
-  <div class="feedback-head"><strong>Leistungsschein</strong> 2026-80030 &nbsp; (25.11.2026)</div>
+  <div class="feedback-head"><strong>Leistungsschein</strong> <span id="feedback-ref">2026-80030 &nbsp; (25.11.2026)</span></div>
   <div class="table-scroll"><table class="positions">
     <thead><tr><th>POS</th><th>ARTIKELNR.</th><th>BEZEICHNUNG</th><th>MNG. BEAUF.</th><th>ME</th><th>MNG. RÜCKM.</th><th>DATUM</th><th>BEMERKUNG</th></tr></thead>
-    <tbody><tr><td>1</td><td>006252</td><td>Lagerfläche je cbm</td><td>40,00</td><td>m²</td><td>0,00</td><td></td><td></td></tr></tbody>
+    <tbody id="feedback-rows"></tbody>
   </table></div>
 </section>
 <section class="card" id="contract" role="tabpanel" aria-labelledby="tab-contract">
   <div class="contract-head">
-    <button type="button" id="contract-toggle" aria-expanded="true" aria-controls="contract-body"><span class="chevron" aria-hidden="true">⌄</span><strong>Lagervertrag</strong> 2026-80030</button>
-    <span>Lagerung von 40 m³ Umzugsgut</span>
+    <button type="button" id="contract-toggle" aria-expanded="true" aria-controls="contract-body"><span class="chevron" aria-hidden="true">⌄</span><strong>Lagervertrag</strong> <span id="contract-number">2026-80030</span></button>
+    <span id="contract-description">Lagerung von 40 m³ Umzugsgut</span>
+    <button class="btn print-btn" id="print-contract" type="button">Drucken</button>
   </div>
   <div class="contract-body" id="contract-body">
     <form id="schedule-form">
       <div class="schedule">
-        <label>Angelagert am<input type="date" name="storedOn" value="2026-11-25"></label>
+        <label>Eingelagert am<input type="date" name="storedOn" value="2026-11-25"></label>
         <label>Ausgelagert am<input type="date" name="removedOn"></label>
         <label>Berechnung ab<input type="date" name="billingStart" value="2026-11-25"></label>
         <label>Berechnung bis<input type="date" name="billingEnd"></label>
@@ -161,21 +222,33 @@ dialog::backdrop{background:#15223760}
       <h2>Vertragspositionen</h2>
       <details class="add" id="add-menu">
         <summary aria-label="Teilpositionen hinzufügen" title="Teilpositionen hinzufügen">+ ▾</summary>
-        <div class="add-menu"><button type="button" id="start-position">Teilposition hinzufügen</button></div>
+        <div class="add-menu">
+          <button type="button" id="start-one-time">Einmalige Teilposition hinzufügen</button>
+          <button type="button" id="start-recurring">Wiederkehrende Teilposition hinzufügen</button>
+        </div>
       </details>
     </div>
     <div class="table-scroll"><table class="positions" aria-label="Abrechenbare Vertragspositionen">
-      <thead><tr><th>NUMMER</th><th>ARTIKELNUMMER</th><th>BEZEICHNUNG</th><th class="num">MENGE</th><th>EINHEIT</th><th class="num">EINZELPREIS</th><th class="num">GESAMTPREIS</th></tr></thead>
+      <thead><tr><th>NUMMER</th><th>ARTIKELNUMMER</th><th>BEZEICHNUNG</th><th>ABRECHNUNGSART</th><th class="num">MENGE</th><th>EINHEIT</th><th class="num">EINZELPREIS</th><th class="num">GESAMTPREIS</th><th scope="col" aria-label="Aktion"></th></tr></thead>
       <tbody id="position-rows"></tbody>
-      <tfoot><tr><td colspan="6" class="num">Summe Netto</td><td class="num" id="net-total"></td></tr></tfoot>
+      <tfoot><tr><td colspan="7" class="num">Summe Netto Positionen</td><td class="num" id="net-total"></td><td></td></tr></tfoot>
     </table></div>
     <div class="actions"><span id="save-status" role="status"></span><button class="btn" type="submit" form="schedule-form">Lagervertrag speichern</button></div>
   </div>
 </section>
 </section>
+</section>
+<section id="billing-view" hidden>
+  <h1 tabindex="-1" id="billing-heading">Lagerabrechnung</h1>
+  <p class="billing-intro">20 Lagerverträge · Musterabrechnung</p>
+  <div class="billing-grid billing-columns" aria-hidden="true"><span>Lagervertrag</span><span class="billing-project">Projekt</span><span>Kunde</span><span class="billing-cycle">Rechnungsturnus</span><span class="billing-amount">Netto je Turnus</span></div>
+  <div class="billing-list" id="billing-list"></div>
+  <span class="visually-hidden" id="billing-status" role="status"></span>
+</section>
 </main>
 </div>
 </div>
+<section id="print-sheet" aria-label="Druckansicht"></section>
 <dialog id="position-dialog" aria-labelledby="position-title">
   <div class="dialog-head"><h2 id="position-title">Teilposition hinzufügen</h2></div>
   <form class="entry" id="position-form">
@@ -184,7 +257,8 @@ dialog::backdrop{background:#15223760}
     <label class="description">Bezeichnung<input name="description" required maxlength="120"></label>
     <label>Menge<input name="quantity" type="number" min="0.01" max="999999" step="0.01" value="1" required></label>
     <label>Einzelpreis in €<input name="price" type="number" min="0" max="999999.99" step="0.01" required></label>
-    <div class="actions"><button class="btn btn-light" type="button" id="cancel-position">Abbrechen</button><button class="btn" type="submit">Hinzufügen</button></div>
+    <label id="service-date-label" hidden>Leistungsdatum<input type="date" name="serviceDate" disabled></label>
+    <div class="actions"><button class="btn btn-light" type="button" id="cancel-position">Abbrechen</button><button class="btn" type="submit" id="submit-position">Hinzufügen</button></div>
   </form>
 </dialog>
 <script>
@@ -216,87 +290,544 @@ contractToggle.addEventListener('click', () => {
   contractToggle.setAttribute('aria-expanded', !body.hidden);
 });
 
-const scheduleForm = document.getElementById('schedule-form');
-const status = document.getElementById('save-status');
-const storageKey = 'hilde-lagervertrag-klickdummy-2026-80030';
-const positions = [{article: '006252', description: 'Lagerfläche je cbm', unit: 'm²', quantity: 40, price: 8.80}];
-try {
-  const saved = JSON.parse(localStorage.getItem(storageKey));
-  if (saved) {
-    for (const field of scheduleForm.elements) {
-      if (field.name && typeof saved.schedule[field.name] === 'string') field.value = saved.schedule[field.name];
+const byId = id => document.getElementById(id);
+const scheduleForm = byId('schedule-form');
+const status = byId('save-status');
+const intervalMonths = new Map([['Monatlich', 1], ['Vierteljährlich', 3], ['Halbjährlich', 6], ['Jährlich', 12]]);
+const scheduleLabels = {
+  storedOn: 'Eingelagert am', removedOn: 'Ausgelagert am',
+  billingStart: 'Berechnung ab', billingEnd: 'Berechnung bis', interval: 'Rechnungsturnus'
+};
+const customers = [
+  'Mara Beispiel', 'Jana Muster', 'Nils Linden', 'Aylin Winter', 'Emil Sommer',
+  'Mila Bach', 'Lena Feld', 'Tarek Klein', 'Ida Berg', 'Mats Stern',
+  'Nora Ufer', 'Jonas Wiese', 'Sina Kern', 'Mina Busch', 'Tom Seidel',
+  'Ines Blum', 'Omar West', 'Erik Tal', 'Cem Lorenz', 'Eva Brand'
+];
+const cities = ['16562 Bergfelde', '14532 Kleinmachnow', '14513 Teltow', '14467 Potsdam', '10115 Berlin'];
+const contracts = customers.map((customer, index) => {
+  const id = '2026-' + (80030 + index);
+  const defaultDate = index === 0 ? '2026-11-25' : '2026-11-' + String(index + 1).padStart(2, '0');
+  const quantity = index === 0 ? 40 : 5 + index * 2;
+  const positions = [{article: '006252', description: 'Lagerfläche je cbm', unit: 'm²', quantity, price: 8.80}];
+  if (index % 3 === 1) positions.push({
+    article: '006253', description: 'Lagerbox', unit: 'Stk.', quantity: 1 + index % 4, price: 12.50
+  });
+  if (index % 5 === 1) positions.push({
+    id: id + '-warenannahme', kind: 'one-time', serviceDate: defaultDate,
+    article: '006254', description: 'Warenannahme', unit: 'Stk.', quantity: 1, price: 28.50
+  });
+  const defaults = {
+    positions,
+    schedule: {
+      storedOn: defaultDate, removedOn: '', billingStart: defaultDate,
+      billingEnd: '', interval: [...intervalMonths.keys()][index % intervalMonths.size]
     }
-    positions.splice(0, positions.length, ...saved.positions);
+  };
+  const key = 'hilde-lagervertrag-klickdummy-' + id;
+  return {
+    id, key, customer,
+    project: 'P26-' + String(43 + index).padStart(3, '0'),
+    description: 'Lagerung von ' + quantity + ' m³ Umzugsgut',
+    city: cities[index % cities.length],
+    address: 'Musterstraße ' + (22 + index),
+    saved: readLocal(key) ?? defaults,
+    invoices: readLocal(key + '-invoices') ?? []
+  };
+});
+
+function readLocal(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key));
+  } catch {
+    return null;
   }
-} catch {
-  // The example stays usable when local storage is unavailable.
 }
 
 const money = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'});
 const amount = new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-const rows = document.getElementById('position-rows');
-function renderPositions() {
-  rows.replaceChildren();
-  let totalCents = 0;
-  positions.forEach(({article, description, unit, quantity, price}, index) => {
-    const lineCents = Math.round(Math.round(quantity * 100) * Math.round(price * 100) / 100);
-    totalCents += lineCents;
-    const row = rows.insertRow();
-    const values = [index + 1, article, description, amount.format(quantity), unit, money.format(price), money.format(lineCents / 100)];
-    for (const [column, value] of values.entries()) {
-      const cell = row.insertCell();
-      cell.textContent = value;
-      if ([3, 5, 6].includes(column)) cell.className = 'num';
-    }
-  });
-  document.getElementById('net-total').textContent = money.format(totalCents / 100);
+const lineCents = ({quantity, price}) => Math.round(Math.round(quantity * 100) * Math.round(price * 100) / 100);
+const netCents = positions => positions.reduce((total, position) => total + lineCents(position), 0);
+const formatDate = date => date ? date.split('-').reverse().join('.') : '–';
+const netText = positions => money.format(netCents(positions) / 100);
+const rangeText = ({start, end}) => formatDate(start) + '–' + formatDate(end);
+const contractUrl = id => '#lagervertrag-' + id;
+const isOneTime = position => position.kind === 'one-time';
+const positionType = position => isOneTime(position) ? 'Einmalig · ' + formatDate(position.serviceDate) : 'Wiederkehrend';
+
+function element(tag, text, className) {
+  const result = document.createElement(tag);
+  if (text != null) result.textContent = text;
+  if (className) result.className = className;
+  return result;
 }
-renderPositions();
+
+function positionValues(position, index) {
+  const {article, description, unit, quantity, price} = position;
+  return [index + 1, article, description, amount.format(quantity), unit,
+    money.format(price), money.format(lineCents(position) / 100)];
+}
+
+function positionRow(position, index) {
+  const row = element('tr');
+  for (const [column, value] of positionValues(position, index).entries()) {
+    row.append(element('td', value, [3, 5, 6].includes(column) ? 'num' : ''));
+    if (column === 2) row.append(element('td', positionType(position)));
+  }
+  return row;
+}
+
+const headers = ['Nummer', 'Artikelnummer', 'Bezeichnung', 'Abrechnungsart', 'Menge', 'Einheit', 'Einzelpreis', 'Gesamtpreis'];
+function positionTable(positions) {
+  const table = element('table', null, 'positions');
+  const header = table.createTHead().insertRow();
+  for (const [index, label] of headers.entries()) {
+    const cell = element('th', label, [4, 6, 7].includes(index) ? 'num' : '');
+    cell.scope = 'col';
+    header.append(cell);
+  }
+  table.createTBody().append(...positions.map(positionRow));
+  const bottom = table.createTFoot().insertRow();
+  const label = element('td', 'Summe Netto Positionen', 'num');
+  label.colSpan = 7;
+  bottom.append(label, element('td', netText(positions), 'num'));
+  return table;
+}
+
+let currentContract;
+let currentPositions;
+function renderPositions() {
+  const rows = byId('position-rows');
+  rows.replaceChildren();
+  for (const [index, position] of currentPositions.entries()) {
+    const row = positionRow(position, index);
+    const cell = element('td', null, 'num edit-price');
+    const edit = element('button', 'Bearbeiten', 'btn btn-light');
+    edit.type = 'button';
+    edit.setAttribute('aria-label', 'Position ' + (index + 1) + ' bearbeiten');
+    edit.addEventListener('click', () => openPosition(
+      isOneTime(position) ? 'one-time' : 'recurring', index, edit
+    ));
+    cell.append(edit);
+    row.append(cell);
+    rows.append(row);
+  }
+  byId('net-total').textContent = netText(currentPositions);
+}
+
+function contractSnapshot() {
+  return {
+    schedule: Object.fromEntries(new FormData(scheduleForm)),
+    positions: currentPositions.map(position => ({...position}))
+  };
+}
+
+function activateContract(contract) {
+  if (currentContract) currentContract.draft = contractSnapshot();
+  currentContract = contract;
+  const {schedule, positions} = contract.draft ?? contract.saved;
+  currentPositions = positions.map(position => ({...position}));
+  for (const key of Object.keys(scheduleLabels)) scheduleForm.elements[key].value = schedule[key] ?? '';
+  byId('contract-number').textContent = contract.id;
+  byId('contract-description').textContent = contract.description;
+  byId('project-title').textContent = contract.project + ' · ' + contract.description;
+  byId('project-customer').textContent = contract.customer + ' · Angenommen';
+  byId('customer-name').textContent = contract.customer;
+  byId('customer-contact').textContent = contract.customer.split(' ').at(-1);
+  byId('customer-address').replaceChildren(contract.address, element('br'), contract.city + ' DE');
+  byId('feedback-ref').textContent = contract.id + ' (' + formatDate(schedule.storedOn) + ')';
+  const feedback = positions.map((position, index) => {
+    const row = element('tr');
+    [index + 1, position.article, position.description, amount.format(position.quantity),
+      position.unit, '0,00', '', ''].forEach(value => row.append(element('td', value)));
+    return row;
+  });
+  byId('feedback-rows').replaceChildren(...feedback);
+  document.querySelectorAll('.selected-project').forEach(cell => { cell.textContent = contract.project + ' ' + contract.description; });
+  document.querySelectorAll('.selected-customer').forEach(cell => { cell.textContent = contract.customer + ', ' + contract.city.slice(6); });
+  byId('nav-projects').href = contractUrl(contract.id);
+  byId('contract-body').hidden = false;
+  contractToggle.setAttribute('aria-expanded', 'true');
+  selectTab(byId('tab-contract'));
+  status.textContent = '';
+  renderPositions();
+}
 
 scheduleForm.addEventListener('input', () => { status.textContent = ''; });
-scheduleForm.addEventListener('submit', (event) => {
+scheduleForm.addEventListener('submit', event => {
   event.preventDefault();
-  const schedule = Object.fromEntries(new FormData(scheduleForm));
+  const snapshot = contractSnapshot();
+  currentContract.saved = snapshot;
+  currentContract.draft = snapshot;
   try {
-    localStorage.setItem(storageKey, JSON.stringify({schedule, positions}));
+    localStorage.setItem(currentContract.key, JSON.stringify(snapshot));
     status.textContent = 'Im Browser gespeichert.';
   } catch {
-    status.textContent = 'Speichern ist in dieser Browseransicht nicht verfügbar.';
+    status.textContent = 'Für diese Sitzung gespeichert.';
   }
 });
 
-const menu = document.getElementById('add-menu');
-const dialog = document.getElementById('position-dialog');
-const positionForm = document.getElementById('position-form');
-document.getElementById('start-position').addEventListener('click', () => {
+const menu = byId('add-menu');
+const dialog = byId('position-dialog');
+const positionForm = byId('position-form');
+let editingIndex;
+let editingKind;
+let returnFocus;
+
+function openPosition(kind, index, trigger) {
+  editingKind = kind;
+  editingIndex = index;
+  returnFocus = trigger;
   menu.open = false;
   positionForm.reset();
+  const editing = index != null;
+  const oneTime = kind === 'one-time';
+  const title = oneTime ? 'Einmalige Teilposition' : 'Wiederkehrende Teilposition';
+  byId('position-title').textContent = title + (editing ? ' bearbeiten' : ' hinzufügen');
+  byId('submit-position').textContent = editing ? 'Übernehmen' : 'Hinzufügen';
+  const serviceDate = positionForm.elements.serviceDate;
+  byId('service-date-label').hidden = !oneTime;
+  serviceDate.disabled = !oneTime;
+  serviceDate.required = oneTime;
+  if (editing) {
+    for (const name of ['article', 'description', 'unit', 'quantity', 'price', 'serviceDate']) {
+      positionForm.elements[name].value = currentPositions[index][name] ?? '';
+    }
+  }
   dialog.showModal();
-});
-document.getElementById('cancel-position').addEventListener('click', () => dialog.close());
-dialog.addEventListener('close', () => menu.querySelector('summary').focus());
-document.addEventListener('click', (event) => {
+}
+byId('start-one-time').addEventListener('click', () => openPosition('one-time', null, menu.querySelector('summary')));
+byId('start-recurring').addEventListener('click', () => openPosition('recurring', null, menu.querySelector('summary')));
+byId('cancel-position').addEventListener('click', () => dialog.close());
+dialog.addEventListener('close', () => (returnFocus?.isConnected ? returnFocus : menu.querySelector('summary')).focus());
+document.addEventListener('click', event => {
   if (!menu.contains(event.target)) menu.open = false;
 });
-menu.addEventListener('keydown', (event) => {
+menu.addEventListener('keydown', event => {
   if (event.key !== 'Escape' || !menu.open) return;
   menu.open = false;
   menu.querySelector('summary').focus();
 });
-positionForm.addEventListener('submit', (event) => {
+positionForm.addEventListener('submit', event => {
   event.preventDefault();
   const data = new FormData(positionForm);
-  positions.push({
-    article: data.get('article').trim(),
-    description: data.get('description').trim(),
-    unit: data.get('unit').trim(),
-    quantity: Number(data.get('quantity')),
-    price: Number(data.get('price'))
-  });
+  const position = {
+    article: data.get('article').trim(), description: data.get('description').trim(),
+    unit: data.get('unit').trim(), quantity: Number(data.get('quantity')), price: Number(data.get('price'))
+  };
+  const empty = ['article', 'description', 'unit'].find(name => !position[name]);
+  if (empty) {
+    positionForm.elements[empty].value = '';
+    positionForm.elements[empty].reportValidity();
+    return;
+  }
+  position.kind = editingKind;
+  if (editingKind === 'one-time') {
+    position.id = editingIndex == null ? currentContract.id + '-pos-' + (currentPositions.length + 1)
+      : currentPositions[editingIndex].id;
+    position.serviceDate = data.get('serviceDate');
+  }
+  if (editingIndex == null) currentPositions.push(position);
+  else currentPositions[editingIndex] = position;
   renderPositions();
   status.textContent = '';
   dialog.close();
 });
+
+byId('print-contract').addEventListener('click', () => {
+  const {schedule, positions} = contractSnapshot();
+  const sheet = byId('print-sheet');
+  sheet.replaceChildren(
+    element('strong', 'Haberling · Mustervertrag'),
+    element('h1', 'Lagervertrag ' + currentContract.id),
+    element('p', currentContract.project + ' · ' + currentContract.description),
+    element('p', currentContract.customer + ' · ' + currentContract.address + ' · ' + currentContract.city)
+  );
+  for (const [key, label] of Object.entries(scheduleLabels)) {
+    sheet.append(element('p', label + ': ' + (key === 'interval' ? schedule[key] : formatDate(schedule[key]))));
+  }
+  sheet.append(positionTable(positions));
+  window.print();
+});
+
+function invoicePeriod({billingStart, billingEnd, interval}, invoices) {
+  const months = intervalMonths.get(interval);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(billingStart) || !months) return null;
+  const anchor = new Date(billingStart + 'T00:00:00Z');
+  if (!Number.isFinite(anchor.getTime())) return null;
+
+  let start = billingStart;
+  for (let cycle = 1; cycle <= invoices.length + 1 && (!billingEnd || start <= billingEnd); cycle++) {
+    const year = anchor.getUTCFullYear();
+    const month = anchor.getUTCMonth() + cycle * months;
+    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    const boundary = new Date(Date.UTC(year, month, Math.min(lastDay, anchor.getUTCDate() - 1)));
+    const naturalEnd = boundary.toISOString().slice(0, 10);
+    const end = billingEnd && billingEnd < naturalEnd ? billingEnd : naturalEnd;
+    if (!invoices.some(invoice => invoice.start === start && invoice.end === end)) return {start, end};
+    if (end === billingEnd) return null;
+    boundary.setUTCDate(boundary.getUTCDate() + 1);
+    start = boundary.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
+function billablePositions(contract, period) {
+  if (!period) return [];
+  const billed = new Set(contract.invoices.flatMap(invoice => invoice.positions.filter(isOneTime).map(position => position.id)));
+  return contract.saved.positions.filter(position =>
+    !isOneTime(position) || (position.serviceDate && position.serviceDate <= period.end && !billed.has(position.id))
+  );
+}
+
+const expandedContracts = new Set([contracts[0].id]);
+function billingCard(contract) {
+  const {schedule, positions} = contract.saved;
+  const period = invoicePeriod(schedule, contract.invoices);
+  const billable = billablePositions(contract, period);
+  const invoiced = period && contract.invoices.some(invoice => periodsOverlap(invoice, period));
+  const card = element('details', null, 'billing-item');
+  card.open = expandedContracts.has(contract.id);
+  card.addEventListener('toggle', () => {
+    if (card.open) expandedContracts.add(contract.id);
+    else expandedContracts.delete(contract.id);
+  });
+  const summary = element('summary');
+  const summaryRow = element('span', null, 'billing-grid');
+  summaryRow.append(
+    element('strong', contract.id), element('span', contract.project + ' · ' + contract.description, 'billing-project'),
+    element('span', contract.customer), element('span', schedule.interval, 'billing-cycle'),
+    element('strong', netText(positions.filter(position => !isOneTime(position))), 'billing-amount')
+  );
+  summary.append(summaryRow);
+
+  const body = element('div', null, 'billing-body');
+  const dates = element('div', null, 'billing-dates');
+  for (const [key, label] of Object.entries(scheduleLabels)) {
+    const field = element('span');
+    field.append(element('strong', label + ': '), key === 'interval' ? schedule[key] : formatDate(schedule[key]));
+    dates.append(field);
+  }
+  const table = element('div', null, 'table-scroll');
+  table.append(positionTable(positions));
+
+  const actions = element('div', null, 'billing-actions');
+  const link = element('a', 'Zum Lagervertrag', 'btn btn-light btn-link');
+  link.href = contractUrl(contract.id);
+  link.setAttribute('aria-label', 'Zum Lagervertrag ' + contract.id);
+  const bill = element('button', 'Abrechnen', 'btn');
+  bill.type = 'button';
+  bill.disabled = !period || Boolean(invoiced) || !billable.length;
+  bill.addEventListener('click', () => createInvoice(contract, period));
+  let periodText = schedule.billingEnd && contract.invoices.some(invoice => invoice.end === schedule.billingEnd)
+    ? 'Berechnung bis erreicht.' : 'Abrechnungszeitraum im Vertrag prüfen.';
+  if (period) {
+    periodText = 'Nächster Zeitraum: ' + rangeText(period);
+    if (invoiced) periodText += ' · Überschneidet sich mit einer Rechnung';
+    else if (billable.length) periodText += ' · Netto ' + netText(billable);
+    else periodText += ' · Keine abrechenbaren Positionen';
+  }
+  actions.append(element('span', periodText, 'billing-period'), link, bill);
+  body.append(dates, table, actions);
+  if (contract.invoices.length) {
+    const files = element('ul', null, 'billing-files');
+    for (const invoice of contract.invoices) {
+      const file = element('a', 'Rechnung als PDF · ' + rangeText(invoice));
+      file.href = '#rechnung-' + invoice.number;
+      file.addEventListener('click', event => {
+        event.preventDefault();
+        downloadInvoice(invoice);
+      });
+      const item = element('li');
+      item.append(file);
+      files.append(item);
+    }
+    body.append(files);
+  }
+  card.append(summary, body);
+  return card;
+}
+
+function renderBilling() {
+  byId('billing-list').replaceChildren(...contracts.map(billingCard));
+}
+
+function periodsOverlap(first, second) {
+  return first.start <= second.end && second.start <= first.end;
+}
+
+function createInvoice(contract, period) {
+  if (!period || contract.invoices.some(invoice => periodsOverlap(invoice, period))) return;
+  const positions = billablePositions(contract, period);
+  if (!positions.length) return;
+  const invoice = {
+    ...period, number: 'M-' + contract.id + '-' + period.start.replaceAll('-', '') + '-' + period.end.replaceAll('-', ''),
+    contractId: contract.id, project: contract.project, customer: contract.customer,
+    address: contract.address, city: contract.city, interval: contract.saved.schedule.interval,
+    date: new Date().toLocaleDateString('de-DE', {timeZone: 'Europe/Berlin'}),
+    positions: positions.map(position => ({...position}))
+  };
+  downloadInvoice(invoice);
+  contract.invoices.push(invoice);
+  try {
+    localStorage.setItem(contract.key + '-invoices', JSON.stringify(contract.invoices));
+  } catch {
+    // The PDF stays available for this session.
+  }
+  renderBilling();
+  byId('billing-status').textContent = 'Musterrechnung für Lagervertrag ' + contract.id + ' erstellt.';
+  byId('billing-list').querySelector('[href="#rechnung-' + invoice.number + '"]').focus();
+}
+
+function showRoute(initial = false) {
+  const hash = location.hash;
+  const billing = hash === '#lagerabrechnung';
+  byId('projects-view').hidden = billing;
+  byId('billing-view').hidden = !billing;
+  byId('nav-projects').toggleAttribute('aria-current', !billing);
+  if (!billing) byId('nav-projects').setAttribute('aria-current', 'page');
+  byId('nav-billing').toggleAttribute('aria-current', billing);
+  if (billing) {
+    byId('nav-billing').setAttribute('aria-current', 'page');
+    renderBilling();
+    if (!initial) byId('billing-heading').focus();
+    window.scrollTo(0, 0);
+  } else {
+    const contract = contracts.find(item => contractUrl(item.id) === hash) ?? contracts[0];
+    activateContract(contract);
+    if (!initial || hash) {
+      contractToggle.focus({preventScroll: true});
+      byId('contract').scrollIntoView({block: 'nearest'});
+    }
+  }
+}
+window.addEventListener('hashchange', () => showRoute());
+showRoute(true);
+
+// Minimal PDF 1.4 export using built-in fonts. Hex-encoded text keeps the PDF
+// body ASCII, so string offsets are also valid byte offsets for its index.
+const winAnsi = new Map([...('€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ')].map((character, index) =>
+  [character, [128,130,131,132,133,134,135,136,137,138,139,140,142,145,146,147,148,149,150,151,152,153,154,155,156,158,159][index]]
+));
+function pdfHex(text) {
+  return Array.from(String(text).normalize('NFC'), character => {
+    const code = character.codePointAt(0);
+    const byte = winAnsi.get(character) ?? (code >= 32 && code <= 255 ? code : 63);
+    return byte.toString(16).padStart(2, '0');
+  }).join('');
+}
+
+function pdfLines(text, limit) {
+  const lines = [];
+  let line = '';
+  for (const word of String(text).split(/\s+/)) {
+    if (line && line.length + word.length + 1 > limit) {
+      lines.push(line);
+      line = '';
+    }
+    line += (line ? ' ' : '') + word;
+    while (line.length > limit) {
+      lines.push(line.slice(0, limit));
+      line = line.slice(limit);
+    }
+  }
+  return [...lines, line];
+}
+
+function invoicePdf(invoice) {
+  const pages = [];
+  let commands;
+  let y;
+  function text(value, x, baseline, size = 10, bold = false) {
+    commands.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + size + ' Tf ' +
+      x + ' ' + baseline + ' Td <' + pdfHex(value) + '> Tj ET');
+  }
+  function line(baseline) {
+    commands.push('0.78 G 40 ' + baseline + ' m 555 ' + baseline + ' l S');
+  }
+  function page(title) {
+    commands = [];
+    pages.push(commands);
+    text('HABERLING', 40, 796, 13, true);
+    text(title, 40, 758, 22, true);
+    text('Rechnung ' + invoice.number, 40, 734);
+    text('Seite ' + pages.length, 500, 38, 9);
+    y = 704;
+  }
+  function tableHead() {
+    const columns = [[40, 'Nr.'], [65, 'Artikel'], [130, 'Bezeichnung'], [345, 'Menge'],
+      [400, 'Einheit'], [448, 'Einzelpreis'], [508, 'Gesamt']];
+    for (const [x, value] of columns) text(value, x, y, 9, true);
+    line(y - 8);
+    y -= 23;
+  }
+  page('Musterrechnung Lagerung');
+  text(invoice.customer, 40, y);
+  text(invoice.address, 40, y - 14);
+  text(invoice.city, 40, y - 28);
+  text('Rechnungsdatum: ' + invoice.date, 336, y);
+  text('Lagervertrag: ' + invoice.contractId, 336, y - 14);
+  text('Projekt: ' + invoice.project, 336, y - 28);
+  text('Abrechnungszeitraum: ' + rangeText(invoice), 40, y - 62);
+  text('Rechnungsturnus: ' + invoice.interval, 40, y - 78);
+  y -= 111;
+  tableHead();
+
+  for (const [index, position] of invoice.positions.entries()) {
+    const values = positionValues(position, index).map(String);
+    const columns = [
+      [40, values[0], 4], [65, values[1], 11], [130, values[2], 39],
+      [345, values[3], 11], [400, values[4], 8], [448, values[5], 11], [508, values[6], 11]
+    ].map(([x, value, limit]) => [x, pdfLines(value, limit)]);
+    columns[2][1].push(positionType(position));
+    const height = Math.max(...columns.map(([, lines]) => lines.length)) * 13 + 5;
+    if (y - height < 80) {
+      page('Musterrechnung · Fortsetzung');
+      tableHead();
+    }
+    for (const [x, lines] of columns) lines.forEach((value, row) => text(value, x, y - row * 13, 9));
+    y -= height;
+  }
+  if (y < 111) page('Musterrechnung · Fortsetzung');
+  line(y + 2);
+  text('Summe Netto: ' + netText(invoice.positions), 345, y - 18, 11, true);
+  text('Musterbeleg aus der HILDE-Demo.', 40, y - 46, 9);
+
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Count ' + pages.length + ' /Kids [' + pages.map((_, index) => (5 + index * 2) + ' 0 R').join(' ') + '] >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'
+  ];
+  for (const [index, content] of pages.entries()) {
+    const stream = content.join('\n') + '\n';
+    objects.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources ' +
+      '<< /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (6 + index * 2) + ' 0 R >>');
+    objects.push('<< /Length ' + stream.length + ' >>\nstream\n' + stream + 'endstream');
+  }
+  let pdf = '%PDF-1.4\n';
+  const offsets = objects.map((object, index) => {
+    const offset = pdf.length;
+    pdf += (index + 1) + ' 0 obj\n' + object + '\nendobj\n';
+    return offset;
+  });
+  const xref = pdf.length;
+  pdf += 'xref\n0 ' + (objects.length + 1) + '\n0000000000 65535 f \n';
+  for (const offset of offsets) pdf += String(offset).padStart(10, '0') + ' 00000 n \n';
+  return pdf + 'trailer\n<< /Size ' + (objects.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n';
+}
+
+function downloadInvoice(invoice) {
+  const blob = new Blob([invoicePdf(invoice)], {type: 'application/pdf'});
+  const url = URL.createObjectURL(blob);
+  const link = element('a');
+  link.href = url;
+  link.download = 'Rechnung-' + invoice.number + '.pdf';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
 </script>
 </body>
 </html>
