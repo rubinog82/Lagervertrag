@@ -90,7 +90,9 @@ dialog::backdrop{background:#15223760}
 .btn:disabled{cursor:default;opacity:.55}
 .btn:hover:not(:disabled){filter:brightness(1.13)}
 #billing-view h1{margin-bottom:7px}
-.billing-intro{color:var(--muted);margin-bottom:14px}
+.billing-toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.billing-intro,.batch-status{color:var(--muted)}
+.batch-status{min-height:1em;margin-bottom:10px;font-size:11px}
 .billing-list{display:grid;gap:6px}
 .billing-grid{display:grid;grid-template-columns:105px minmax(155px,1.3fr) minmax(150px,1fr) minmax(95px,.6fr) minmax(100px,.55fr);gap:12px;align-items:center}
 .billing-columns{padding:7px 13px;margin-left:17px;color:var(--muted);font-size:11px;font-weight:bold}
@@ -239,7 +241,11 @@ dialog::backdrop{background:#15223760}
 </section>
 <section id="billing-view" hidden>
   <h1 tabindex="-1" id="billing-heading">Lagerabrechnung</h1>
-  <p class="billing-intro">20 Lagerverträge · Musterabrechnung</p>
+  <div class="billing-toolbar">
+    <p class="billing-intro">20 Lagerverträge · Musterabrechnung</p>
+    <button class="btn" id="bill-all" type="button" aria-describedby="batch-status">Alle Lagerverträge abrechnen</button>
+  </div>
+  <p class="batch-status" id="batch-status" role="status"></p>
   <div class="billing-grid billing-columns" aria-hidden="true"><span>Lagervertrag</span><span class="billing-project">Projekt</span><span>Kunde</span><span class="billing-cycle">Rechnungsturnus</span><span class="billing-amount">Netto je Turnus</span></div>
   <div class="billing-list" id="billing-list"></div>
   <span class="visually-hidden" id="billing-status" role="status"></span>
@@ -579,12 +585,17 @@ function billablePositions(contract, period) {
   );
 }
 
+function billingCandidate(contract) {
+  const period = invoicePeriod(contract.saved.schedule, contract.invoices);
+  const positions = billablePositions(contract, period);
+  const overlaps = Boolean(period && contract.invoices.some(invoice => periodsOverlap(invoice, period)));
+  return {contract, period, positions, overlaps, ready: Boolean(period && positions.length && !overlaps)};
+}
+
 const expandedContracts = new Set([contracts[0].id]);
 function billingCard(contract) {
   const {schedule, positions} = contract.saved;
-  const period = invoicePeriod(schedule, contract.invoices);
-  const billable = billablePositions(contract, period);
-  const invoiced = period && contract.invoices.some(invoice => periodsOverlap(invoice, period));
+  const {period, positions: billable, overlaps, ready} = billingCandidate(contract);
   const card = element('details', null, 'billing-item');
   card.open = expandedContracts.has(contract.id);
   card.addEventListener('toggle', () => {
@@ -616,13 +627,13 @@ function billingCard(contract) {
   link.setAttribute('aria-label', 'Zum Lagervertrag ' + contract.id);
   const bill = element('button', 'Abrechnen', 'btn');
   bill.type = 'button';
-  bill.disabled = !period || Boolean(invoiced) || !billable.length;
-  bill.addEventListener('click', () => createInvoice(contract, period));
+  bill.disabled = !ready;
+  bill.addEventListener('click', () => createInvoice(contract));
   let periodText = schedule.billingEnd && contract.invoices.some(invoice => invoice.end === schedule.billingEnd)
     ? 'Berechnung bis erreicht.' : 'Abrechnungszeitraum im Vertrag prüfen.';
   if (period) {
     periodText = 'Nächster Zeitraum: ' + rangeText(period);
-    if (invoiced) periodText += ' · Überschneidet sich mit einer Rechnung';
+    if (overlaps) periodText += ' · Überschneidet sich mit einer Rechnung';
     else if (billable.length) periodText += ' · Netto ' + netText(billable);
     else periodText += ' · Keine abrechenbaren Positionen';
   }
@@ -649,34 +660,59 @@ function billingCard(contract) {
 
 function renderBilling() {
   byId('billing-list').replaceChildren(...contracts.map(billingCard));
+  const ready = contracts.filter(contract => billingCandidate(contract).ready).length;
+  byId('bill-all').disabled = ready === 0;
+  byId('batch-status').textContent = ready
+    ? ready + ' von ' + contracts.length + ' Verträgen abrechenbar. Je Vertrag wird der nächste angezeigte Zeitraum abgerechnet.'
+    : 'Aktuell sind keine weiteren Verträge abrechenbar.';
 }
 
 function periodsOverlap(first, second) {
   return first.start <= second.end && second.start <= first.end;
 }
 
-function createInvoice(contract, period) {
-  if (!period || contract.invoices.some(invoice => periodsOverlap(invoice, period))) return;
-  const positions = billablePositions(contract, period);
-  if (!positions.length) return;
-  const invoice = {
+function invoiceFor({contract, period, positions}) {
+  return {
     ...period, number: 'M-' + contract.id + '-' + period.start.replaceAll('-', '') + '-' + period.end.replaceAll('-', ''),
     contractId: contract.id, project: contract.project, customer: contract.customer,
     address: contract.address, city: contract.city, interval: contract.saved.schedule.interval,
     date: new Date().toLocaleDateString('de-DE', {timeZone: 'Europe/Berlin'}),
     positions: positions.map(position => ({...position}))
   };
-  downloadInvoice(invoice);
+}
+
+function recordInvoice(contract, invoice) {
   contract.invoices.push(invoice);
   try {
     localStorage.setItem(contract.key + '-invoices', JSON.stringify(contract.invoices));
   } catch {
     // The PDF stays available for this session.
   }
+}
+
+function createInvoice(contract) {
+  const candidate = billingCandidate(contract);
+  if (!candidate.ready) return;
+  const invoice = invoiceFor(candidate);
+  downloadInvoice(invoice);
+  recordInvoice(contract, invoice);
   renderBilling();
   byId('billing-status').textContent = 'Musterrechnung für Lagervertrag ' + contract.id + ' erstellt.';
   byId('billing-list').querySelector('[href="#rechnung-' + invoice.number + '"]').focus();
 }
+
+byId('bill-all').addEventListener('click', () => {
+  const candidates = contracts.map(billingCandidate).filter(candidate => candidate.ready);
+  if (!candidates.length) return;
+  const invoices = candidates.map(invoiceFor);
+  const archive = invoiceArchive(invoices);
+  downloadFile(archive, 'Lagerabrechnung.zip');
+  candidates.forEach(({contract}, index) => recordInvoice(contract, invoices[index]));
+  renderBilling();
+  const skipped = contracts.length - invoices.length;
+  const result = invoices.length === 1 ? '1 Musterrechnung erstellt.' : invoices.length + ' Musterrechnungen erstellt.';
+  byId('batch-status').textContent = result + (skipped ? ' ' + skipped + ' nicht abrechenbare Verträge übersprungen.' : '');
+});
 
 function showRoute(initial = false) {
   const hash = location.hash;
@@ -816,16 +852,77 @@ function invoicePdf(invoice) {
   return pdf + 'trailer\n<< /Size ' + (objects.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n';
 }
 
+const invoiceFilename = invoice => 'Rechnung-' + invoice.number + '.pdf';
+
 function downloadInvoice(invoice) {
-  const blob = new Blob([invoicePdf(invoice)], {type: 'application/pdf'});
+  downloadFile(new Blob([invoicePdf(invoice)], {type: 'application/pdf'}), invoiceFilename(invoice));
+}
+
+function downloadFile(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = element('a');
   link.href = url;
-  link.download = 'Rechnung-' + invoice.number + '.pdf';
+  link.download = filename;
   document.body.append(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+// ZIP stores each PDF as a separate, uncompressed entry.
+function invoiceArchive(invoices) {
+  const encoder = new TextEncoder();
+  const files = [];
+  const directory = [];
+  let offset = 0;
+  let directorySize = 0;
+
+  for (const invoice of invoices) {
+    const name = encoder.encode(invoiceFilename(invoice));
+    const pdf = encoder.encode(invoicePdf(invoice));
+    const crc = crc32(pdf);
+
+    const local = new DataView(new ArrayBuffer(30));
+    local.setUint32(0, 0x04034b50, true);
+    local.setUint16(4, 20, true);
+    local.setUint16(12, 0x21, true);
+    local.setUint32(14, crc, true);
+    local.setUint32(18, pdf.length, true);
+    local.setUint32(22, pdf.length, true);
+    local.setUint16(26, name.length, true);
+    files.push(local.buffer, name, pdf);
+
+    const entry = new DataView(new ArrayBuffer(46));
+    entry.setUint32(0, 0x02014b50, true);
+    entry.setUint16(4, 20, true);
+    entry.setUint16(6, 20, true);
+    entry.setUint16(14, 0x21, true);
+    entry.setUint32(16, crc, true);
+    entry.setUint32(20, pdf.length, true);
+    entry.setUint32(24, pdf.length, true);
+    entry.setUint16(28, name.length, true);
+    entry.setUint32(42, offset, true);
+    directory.push(entry.buffer, name);
+
+    offset += local.byteLength + name.length + pdf.length;
+    directorySize += entry.byteLength + name.length;
+  }
+
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, invoices.length, true);
+  end.setUint16(10, invoices.length, true);
+  end.setUint32(12, directorySize, true);
+  end.setUint32(16, offset, true);
+  return new Blob([...files, ...directory, end.buffer], {type: 'application/zip'});
+}
+
+function crc32(bytes) {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
 }
 </script>
 </body>
