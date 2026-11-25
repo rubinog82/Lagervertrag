@@ -92,10 +92,17 @@ dialog::backdrop{background:#15223760}
 #billing-view h1{margin-bottom:7px}
 .billing-toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .billing-intro,.batch-status{color:var(--muted)}
+.batch-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.billing-master{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.billing-master input,.billing-select input{width:16px;height:16px;margin:0;accent-color:var(--dark);cursor:pointer}
+.billing-master input:disabled,.billing-select input:disabled{cursor:default}
+.billing-row{display:grid;grid-template-columns:30px minmax(0,1fr)}
+.billing-select{display:flex;align-items:flex-start;justify-content:center;padding-top:11px}
+.billing-select label{display:grid;place-items:center;width:100%;cursor:pointer}
 .batch-status{min-height:1em;margin-bottom:10px;font-size:11px}
 .billing-list{display:grid;gap:6px}
 .billing-grid{display:grid;grid-template-columns:105px minmax(155px,1.3fr) minmax(150px,1fr) minmax(95px,.6fr) minmax(100px,.55fr);gap:12px;align-items:center}
-.billing-columns{padding:7px 13px;margin-left:17px;color:var(--muted);font-size:11px;font-weight:bold}
+.billing-columns{padding:7px 13px;margin-left:47px;color:var(--muted);font-size:11px;font-weight:bold}
 .billing-item{background:#fff;border:1px solid var(--line);border-radius:5px}
 .billing-item summary{list-style:none;display:grid;grid-template-columns:17px minmax(0,1fr);align-items:center;padding:9px 12px;cursor:pointer}
 .billing-item summary::-webkit-details-marker{display:none}
@@ -243,7 +250,10 @@ dialog::backdrop{background:#15223760}
   <h1 tabindex="-1" id="billing-heading">Lagerabrechnung</h1>
   <div class="billing-toolbar">
     <p class="billing-intro">20 Lagerverträge · Musterabrechnung</p>
-    <button class="btn" id="bill-all" type="button" aria-describedby="batch-status">Alle Lagerverträge abrechnen</button>
+    <div class="batch-controls">
+      <label class="billing-master"><input type="checkbox" id="select-all-contracts">Alle auswählen</label>
+      <button class="btn" id="bill-selected" type="button" aria-describedby="batch-status" disabled>Ausgewählte abrechnen</button>
+    </div>
   </div>
   <p class="batch-status" id="batch-status" role="status"></p>
   <div class="billing-grid billing-columns" aria-hidden="true"><span>Lagervertrag</span><span class="billing-project">Projekt</span><span>Kunde</span><span class="billing-cycle">Rechnungsturnus</span><span class="billing-amount">Netto je Turnus</span></div>
@@ -593,6 +603,8 @@ function billingCandidate(contract) {
 }
 
 const expandedContracts = new Set([contracts[0].id]);
+const selectedContracts = new Set();
+const selectAllContracts = byId('select-all-contracts');
 function billingCard(contract) {
   const {schedule, positions} = contract.saved;
   const {period, positions: billable, overlaps, ready} = billingCandidate(contract);
@@ -655,17 +667,58 @@ function billingCard(contract) {
     body.append(files);
   }
   card.append(summary, body);
-  return card;
+
+  const row = element('div', null, 'billing-row');
+  const select = element('div', null, 'billing-select');
+  const label = element('label');
+  const checkbox = element('input');
+  checkbox.type = 'checkbox';
+  checkbox.setAttribute('aria-label', 'Lagervertrag ' + contract.id + ' auswählen');
+  checkbox.disabled = !ready;
+  checkbox.checked = selectedContracts.has(contract.id);
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) selectedContracts.add(contract.id);
+    else selectedContracts.delete(contract.id);
+    updateBillingSelection();
+  });
+  label.append(checkbox);
+  select.append(label);
+  row.append(select, card);
+  return row;
+}
+
+function readyForBilling() {
+  return contracts.map(billingCandidate).filter(candidate => candidate.ready);
+}
+
+function updateBillingSelection() {
+  const ready = readyForBilling().length;
+  const count = selectedContracts.size;
+  selectAllContracts.disabled = ready === 0;
+  selectAllContracts.checked = ready > 0 && count === ready;
+  selectAllContracts.indeterminate = count > 0 && count < ready;
+  byId('bill-selected').disabled = count === 0;
+  byId('batch-status').textContent = ready
+    ? count + ' von ' + ready + ' abrechenbaren Verträgen ausgewählt.'
+    : 'Aktuell sind keine weiteren Verträge abrechenbar.';
 }
 
 function renderBilling() {
+  const eligibleIds = new Set(readyForBilling().map(({contract}) => contract.id));
+  for (const id of selectedContracts) {
+    if (!eligibleIds.has(id)) selectedContracts.delete(id);
+  }
   byId('billing-list').replaceChildren(...contracts.map(billingCard));
-  const ready = contracts.filter(contract => billingCandidate(contract).ready).length;
-  byId('bill-all').disabled = ready === 0;
-  byId('batch-status').textContent = ready
-    ? ready + ' von ' + contracts.length + ' Verträgen abrechenbar. Je Vertrag wird der nächste angezeigte Zeitraum abgerechnet.'
-    : 'Aktuell sind keine weiteren Verträge abrechenbar.';
+  updateBillingSelection();
 }
+
+selectAllContracts.addEventListener('change', () => {
+  selectedContracts.clear();
+  if (selectAllContracts.checked) {
+    for (const {contract} of readyForBilling()) selectedContracts.add(contract.id);
+  }
+  renderBilling();
+});
 
 function periodsOverlap(first, second) {
   return first.start <= second.end && second.start <= first.end;
@@ -683,6 +736,7 @@ function invoiceFor({contract, period, positions}) {
 
 function recordInvoice(contract, invoice) {
   contract.invoices.push(invoice);
+  selectedContracts.delete(contract.id);
   try {
     localStorage.setItem(contract.key + '-invoices', JSON.stringify(contract.invoices));
   } catch {
@@ -701,17 +755,16 @@ function createInvoice(contract) {
   byId('billing-list').querySelector('[href="#rechnung-' + invoice.number + '"]').focus();
 }
 
-byId('bill-all').addEventListener('click', () => {
-  const candidates = contracts.map(billingCandidate).filter(candidate => candidate.ready);
+byId('bill-selected').addEventListener('click', () => {
+  const candidates = readyForBilling().filter(({contract}) => selectedContracts.has(contract.id));
   if (!candidates.length) return;
   const invoices = candidates.map(invoiceFor);
   const archive = invoiceArchive(invoices);
   downloadFile(archive, 'Lagerabrechnung.zip');
   candidates.forEach(({contract}, index) => recordInvoice(contract, invoices[index]));
   renderBilling();
-  const skipped = contracts.length - invoices.length;
-  const result = invoices.length === 1 ? '1 Musterrechnung erstellt.' : invoices.length + ' Musterrechnungen erstellt.';
-  byId('batch-status').textContent = result + (skipped ? ' ' + skipped + ' nicht abrechenbare Verträge übersprungen.' : '');
+  byId('batch-status').textContent = invoices.length === 1
+    ? '1 Musterrechnung erstellt.' : invoices.length + ' Musterrechnungen erstellt.';
 });
 
 function showRoute(initial = false) {
