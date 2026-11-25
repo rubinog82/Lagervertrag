@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HILDE · Lagervertrag | Klickdummy</title>
+<style>
+:root{font:13px Arial,Helvetica,sans-serif;color:#14243a;background:#f5f6f7;--line:#dfe3e8;--dark:#343e50;--head:#485260;--muted:#586578;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #4777af;outline-offset:2px}
+h1,h2,p{margin:0}
+h1,h2{font-size:16px}
+.shell{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:100vh}
+aside{background:#fff;border-right:1px solid var(--line);padding:8px 14px;color:#536176}
+.brand{display:inline-block;background:#ef332b;color:#fff;border-radius:5px;padding:5px 10px;font:bold italic 17px Georgia,serif}
+.side-link,.side-title{display:block;padding:12px 0}
+.side-link:first-of-type{margin-top:10px}
+.side-title{background:#f0f1f3;margin:0 -14px;padding-left:14px;color:#14243a;font-weight:bold}
+.side-list{list-style:none;margin:0;padding:3px 0 9px 8px;font-size:11px;line-height:2.05}
+header{height:44px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line);padding:0 23px;color:var(--muted);font-size:11px}
+header strong{color:#17263c}
+main{padding:16px 22px 28px}
+.toolbar{display:flex;gap:6px;margin:8px 0 13px}
+.search{flex:1;border:1px solid var(--line);border-radius:5px;padding:7px;color:var(--muted);font-size:11px}
+.btn{background:var(--dark);color:#fff;border:1px solid var(--dark);border-radius:4px;padding:7px 10px}
+.btn-light{color:var(--dark);background:#fff;border-color:#cbd2db}
+.toolbar .btn{font-size:11px}
+.projects{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(230px,1fr);gap:16px;margin-bottom:28px}
+.projects h2{margin:0 0 7px}
+.project-list{height:clamp(215px,calc(100vh - 545px),500px);border:1px solid var(--line);overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+th{font-size:10px;background:#edeff1;color:#33455b}
+.project-list th,.project-list td{font-size:11px}
+.project-list td:first-child,.project-list th:first-child{border-left:0}
+.project-list td:last-child,.project-list th:last-child{border-right:0}
+.selected td{background:var(--head);color:#fff}
+.customer{align-self:start;background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 2px 4px #17263c12}
+.customer strong::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:#db304a;margin-right:7px;vertical-align:-1px}
+.customer p{margin:12px 0;line-height:1.5}
+.contact{margin-top:4px;background:#f5f6f7;border:1px solid var(--line);padding:4px 6px}
+.tabs{display:flex;margin:9px 0 14px;border-bottom:1px solid var(--line)}
+.tabs button{background:transparent;border:0;border-radius:3px 3px 0 0;padding:9px 14px}
+.tabs [aria-selected="true"]{background:var(--dark);color:#fff;font-weight:bold}
+.card{background:#fff;border:1px solid var(--line);border-radius:7px;box-shadow:0 1px 3px #17263c0d}
+.contract-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 10px;background:var(--head);color:#fff;border-radius:6px 6px 0 0}
+.contract-head button{color:inherit;border:0;background:transparent;padding:3px 0;text-align:left}
+.chevron{display:inline-block;width:16px;text-align:left}
+#contract-toggle[aria-expanded="false"] .chevron{transform:rotate(-90deg);transform-origin:5px center}
+.contract-body{padding:12px}
+.schedule{display:grid;grid-template-columns:repeat(5,minmax(130px,180px));gap:12px;padding:10px 12px 13px;border:1px solid var(--line);border-radius:5px;background:#f5f6f7}
+.schedule label,.entry label{display:grid;gap:5px;font-weight:bold;font-size:11px}
+input,select{min-width:0;width:100%;height:31px;padding:4px 7px;border:1px solid #cbd2db;border-radius:4px;background:#fff;font-weight:normal}
+.positions-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:11px 0 6px}
+.positions-head h2{font-size:13px}
+.add{position:relative}
+.add summary{list-style:none;color:var(--dark);background:#fff;border:1px solid #cbd2db;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:13px}
+.add summary::-webkit-details-marker{display:none}
+.add-menu{position:absolute;right:0;top:calc(100% + 4px);width:max-content;z-index:2;background:#fff;border:1px solid #cbd2db;border-radius:5px;padding:3px;box-shadow:0 4px 10px #17263c23}
+.add-menu button{border:0;background:#fff;padding:8px;text-align:left}
+.add-menu button:hover{background:#edf0f3}
+.table-scroll{overflow-x:auto}
+.positions{min-width:610px;background:#f7f8f9}
+.positions th{white-space:nowrap}
+.positions .num{text-align:right;white-space:nowrap}
+.positions tfoot td{font-weight:bold}
+.actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:10px}
+#save-status{color:var(--muted);font-size:11px}
+.simple-panel{padding:14px}
+.simple-panel p{margin-top:7px}
+.feedback-head{background:#e8ebee;padding:8px 10px;margin:-14px -14px 10px;border-radius:6px 6px 0 0}
+dialog{width:min(525px,calc(100vw - 30px));padding:0;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 40px #17263c35}
+dialog::backdrop{background:#15223760}
+.dialog-head{background:var(--head);color:#fff;padding:11px 15px}
+.entry{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px}
+.entry .description,.entry .actions{grid-column:1/-1}
+[hidden]{display:none!important}
+@media(max-width:1180px){.shell{grid-template-columns:155px minmax(0,1fr)}.projects{grid-template-columns:1fr 1fr}.customer{grid-column:1/-1}.customer p{margin:6px 0}.schedule{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))}}
+@media(max-width:720px){.shell{display:block}aside{display:none}main{padding:13px}.projects{grid-template-columns:1fr}.project-list{height:auto}.toolbar .btn{display:none}.contract-head{flex-wrap:wrap}.customer{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside aria-label="HILDE-Navigation">
+  <span class="brand">Haberling</span>
+  <span class="side-link">⌂ &nbsp; Dashboard</span>
+  <span class="side-link">▤ &nbsp; Belege ›</span>
+  <span class="side-link">♧ &nbsp; Kapazitätsverwaltung ›</span>
+  <div class="side-title">▤ &nbsp; Stammdaten ⌄</div>
+  <ul class="side-list"><li>Artikelstamm</li><li>Kundenverwaltung</li><li>Standardpreislisten</li><li>Anreden</li><li>Außendienst</li><li>Zuschläge</li><li>E-Mail-Textbausteine</li><li>Beleg-Textbausteine</li></ul>
+  <div class="side-title">⚙ &nbsp; Administration ⌄</div>
+  <ul class="side-list"><li>Grundlageneinstellungen</li><li>Belegfelder</li><li>DATEV-Einstellungen</li><li>Benutzerverwaltung</li><li>Berechtigungen</li><li>Belegarten</li><li>Beleg-Status-Konfiguration</li><li>Beleg-Workflow</li><li>Beleg-Erstellungs-Regeln</li><li>Rückmeldung-Belegarten</li><li>Preisimport</li><li>Belegvorlagen</li></ul>
+</aside>
+<div>
+<header><strong>◫ &nbsp; HILDE</strong><span>Klickdummy &nbsp; · &nbsp; GJ 2026</span></header>
+<main>
+<h1>Projekte</h1>
+<div class="toolbar" aria-hidden="true">
+  <span class="search">Suchen (Matchcode, Name, Kundennummer, Projektnummer, Auftragstext, Belegnummer)…</span>
+  <span class="btn">Projekt anlegen</span><span class="btn">Neue Adresse</span><span class="btn">Neuer Kunde</span>
+</div>
+<div class="projects">
+  <section><h2>Zuletzt geöffnete Projekte (Top 10)</h2>
+  <div class="project-list"><table>
+    <thead><tr><th>Projekt</th><th>Kunde</th><th>Zuletzt</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr class="selected"><td>P26-043 Lagerung von 40 m³ Umzugsgut</td><td>Mara Beispiel, Bergfelde</td><td>25.11. 14:42</td><td>Angenommen</td></tr>
+      <tr><td>P26-042 Haushaltsumzug</td><td>Mara Beispiel, Bergfelde</td><td>24.11. 13:44</td><td>Angenommen</td></tr>
+      <tr><td>P26-040 Destination Service 20 m³</td><td>Max Muster</td><td>18.11. 11:03</td><td>Berechnen</td></tr>
+      <tr><td>P26-041 Abholen einer Palette</td><td>Beispiellogistik, Berlin</td><td>18.11. 10:42</td><td>Neu</td></tr>
+      <tr><td>P26-039 Haushaltsumzug mit Zwischenlagerung</td><td>Mara Beispiel, Bergfelde</td><td>09.11. 10:29</td><td>Aktiv</td></tr>
+    </tbody>
+  </table></div></section>
+  <section><h2>Projekte der ausgewählten Adresse</h2>
+  <div class="project-list"><table>
+    <thead><tr><th>Projekt</th><th>Kunde</th><th>Umsetzung</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr class="selected"><td>P26-043 Lagerung von 40 m³ Umzugsgut</td><td>Mara Beispiel, Bergfelde</td><td></td><td>Angenommen</td></tr>
+      <tr><td>P26-042 Haushaltsumzug</td><td>Mara Beispiel, Bergfelde</td><td>04.01.2027–30.01.2027</td><td>Angenommen</td></tr>
+      <tr><td>P26-039 Haushaltsumzug mit Zwischenlagerung</td><td>Mara Beispiel, Bergfelde</td><td></td><td>Aktiv</td></tr>
+    </tbody>
+  </table></div></section>
+  <section class="customer"><strong>Mara Beispiel 2000008</strong><p>Musterstraße 22<br>16562 Bergfelde DE</p><div>Ansprechpartner</div><div class="contact">Beispiel</div></section>
+</div>
+<section aria-labelledby="details-heading">
+<h2 id="details-heading">Details</h2>
+<div class="tabs" role="tablist" aria-label="Projektdetails">
+  <button type="button" role="tab" id="tab-details" aria-controls="details" aria-selected="false" tabindex="-1">Details</button>
+  <button type="button" role="tab" id="tab-feedback" aria-controls="feedback" aria-selected="false" tabindex="-1">Rückmeldungen</button>
+  <button type="button" role="tab" id="tab-contract" aria-controls="contract" aria-selected="true">Lagervertrag</button>
+</div>
+<section class="card simple-panel" id="details" role="tabpanel" aria-labelledby="tab-details" hidden>
+  <strong>P26-043 · Lagerung von 40 m³ Umzugsgut</strong><p>Mara Beispiel · Angenommen</p>
+</section>
+<section class="card simple-panel" id="feedback" role="tabpanel" aria-labelledby="tab-feedback" hidden>
+  <div class="feedback-head"><strong>Leistungsschein</strong> 2026-80030 &nbsp; (25.11.2026)</div>
+  <div class="table-scroll"><table class="positions">
+    <thead><tr><th>POS</th><th>ARTIKELNR.</th><th>BEZEICHNUNG</th><th>MNG. BEAUF.</th><th>ME</th><th>MNG. RÜCKM.</th><th>DATUM</th><th>BEMERKUNG</th></tr></thead>
+    <tbody><tr><td>1</td><td>006252</td><td>Lagerfläche je cbm</td><td>40,00</td><td>m²</td><td>0,00</td><td></td><td></td></tr></tbody>
+  </table></div>
+</section>
+<section class="card" id="contract" role="tabpanel" aria-labelledby="tab-contract">
+  <div class="contract-head">
+    <button type="button" id="contract-toggle" aria-expanded="true" aria-controls="contract-body"><span class="chevron" aria-hidden="true">⌄</span><strong>Lagervertrag</strong> 2026-80030</button>
+    <span>Lagerung von 40 m³ Umzugsgut</span>
+  </div>
+  <div class="contract-body" id="contract-body">
+    <form id="schedule-form">
+      <div class="schedule">
+        <label>Angelagert am<input type="date" name="storedOn" value="2026-11-25"></label>
+        <label>Ausgelagert am<input type="date" name="removedOn"></label>
+        <label>Berechnung ab<input type="date" name="billingStart" value="2026-11-25"></label>
+        <label>Berechnung bis<input type="date" name="billingEnd"></label>
+        <label>Rechnungsturnus<select name="interval"><option>Monatlich</option><option>Vierteljährlich</option><option>Halbjährlich</option><option>Jährlich</option></select></label>
+      </div>
+    </form>
+    <div class="positions-head">
+      <h2>Vertragspositionen</h2>
+      <details class="add" id="add-menu">
+        <summary aria-label="Teilpositionen hinzufügen" title="Teilpositionen hinzufügen">+ ▾</summary>
+        <div class="add-menu"><button type="button" id="start-position">Teilposition hinzufügen</button></div>
+      </details>
+    </div>
+    <div class="table-scroll"><table class="positions" aria-label="Abrechenbare Vertragspositionen">
+      <thead><tr><th>NUMMER</th><th>ARTIKELNUMMER</th><th>BEZEICHNUNG</th><th class="num">MENGE</th><th>EINHEIT</th><th class="num">EINZELPREIS</th><th class="num">GESAMTPREIS</th></tr></thead>
+      <tbody id="position-rows"></tbody>
+      <tfoot><tr><td colspan="6" class="num">Summe Netto</td><td class="num" id="net-total"></td></tr></tfoot>
+    </table></div>
+    <div class="actions"><span id="save-status" role="status"></span><button class="btn" type="submit" form="schedule-form">Lagervertrag speichern</button></div>
+  </div>
+</section>
+</section>
+</main>
+</div>
+</div>
+<dialog id="position-dialog" aria-labelledby="position-title">
+  <div class="dialog-head"><h2 id="position-title">Teilposition hinzufügen</h2></div>
+  <form class="entry" id="position-form">
+    <label>Artikelnummer<input name="article" required maxlength="30" autofocus></label>
+    <label>Einheit<input name="unit" placeholder="z. B. m³ oder Stk." required maxlength="16"></label>
+    <label class="description">Bezeichnung<input name="description" required maxlength="120"></label>
+    <label>Menge<input name="quantity" type="number" min="0.01" max="999999" step="0.01" value="1" required></label>
+    <label>Einzelpreis in €<input name="price" type="number" min="0" max="999999.99" step="0.01" required></label>
+    <div class="actions"><button class="btn btn-light" type="button" id="cancel-position">Abbrechen</button><button class="btn" type="submit">Hinzufügen</button></div>
+  </form>
+</dialog>
+<script>
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+function selectTab(tab) {
+  for (const item of tabs) {
+    const active = item === tab;
+    item.setAttribute('aria-selected', active);
+    item.tabIndex = active ? 0 : -1;
+    document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
+  }
+}
+for (const [index, tab] of tabs.entries()) {
+  tab.addEventListener('click', () => selectTab(tab));
+  tab.addEventListener('keydown', (event) => {
+    const destinations = {ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1};
+    if (!(event.key in destinations)) return;
+    const next = tabs[(destinations[event.key] + tabs.length) % tabs.length];
+    event.preventDefault();
+    selectTab(next);
+    next.focus();
+  });
+}
+
+const contractToggle = document.getElementById('contract-toggle');
+contractToggle.addEventListener('click', () => {
+  const body = document.getElementById('contract-body');
+  body.hidden = !body.hidden;
+  contractToggle.setAttribute('aria-expanded', !body.hidden);
+});
+
+const scheduleForm = document.getElementById('schedule-form');
+const status = document.getElementById('save-status');
+const storageKey = 'hilde-lagervertrag-klickdummy-2026-80030';
+const positions = [{article: '006252', description: 'Lagerfläche je cbm', unit: 'm²', quantity: 40, price: 8.80}];
+try {
+  const saved = JSON.parse(localStorage.getItem(storageKey));
+  if (saved) {
+    for (const field of scheduleForm.elements) {
+      if (field.name && typeof saved.schedule[field.name] === 'string') field.value = saved.schedule[field.name];
+    }
+    positions.splice(0, positions.length, ...saved.positions);
+  }
+} catch {
+  // The example stays usable when local storage is unavailable.
+}
+
+const money = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'});
+const amount = new Intl.NumberFormat('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const rows = document.getElementById('position-rows');
+function renderPositions() {
+  rows.replaceChildren();
+  let totalCents = 0;
+  positions.forEach(({article, description, unit, quantity, price}, index) => {
+    const lineCents = Math.round(Math.round(quantity * 100) * Math.round(price * 100) / 100);
+    totalCents += lineCents;
+    const row = rows.insertRow();
+    const values = [index + 1, article, description, amount.format(quantity), unit, money.format(price), money.format(lineCents / 100)];
+    for (const [column, value] of values.entries()) {
+      const cell = row.insertCell();
+      cell.textContent = value;
+      if ([3, 5, 6].includes(column)) cell.className = 'num';
+    }
+  });
+  document.getElementById('net-total').textContent = money.format(totalCents / 100);
+}
+renderPositions();
+
+scheduleForm.addEventListener('input', () => { status.textContent = ''; });
+scheduleForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const schedule = Object.fromEntries(new FormData(scheduleForm));
+  try {
+    localStorage.setItem(storageKey, JSON.stringify({schedule, positions}));
+    status.textContent = 'Im Browser gespeichert.';
+  } catch {
+    status.textContent = 'Speichern ist in dieser Browseransicht nicht verfügbar.';
+  }
+});
+
+const menu = document.getElementById('add-menu');
+const dialog = document.getElementById('position-dialog');
+const positionForm = document.getElementById('position-form');
+document.getElementById('start-position').addEventListener('click', () => {
+  menu.open = false;
+  positionForm.reset();
+  dialog.showModal();
+});
+document.getElementById('cancel-position').addEventListener('click', () => dialog.close());
+dialog.addEventListener('close', () => menu.querySelector('summary').focus());
+document.addEventListener('click', (event) => {
+  if (!menu.contains(event.target)) menu.open = false;
+});
+menu.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || !menu.open) return;
+  menu.open = false;
+  menu.querySelector('summary').focus();
+});
+positionForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const data = new FormData(positionForm);
+  positions.push({
+    article: data.get('article').trim(),
+    description: data.get('description').trim(),
+    unit: data.get('unit').trim(),
+    quantity: Number(data.get('quantity')),
+    price: Number(data.get('price'))
+  });
+  renderPositions();
+  status.textContent = '';
+  dialog.close();
+});
+</script>
+</body>
+</html>
